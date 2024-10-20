@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="script.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav class="nip">
+      <ul class="navbar">
+        <li><a href="#" id="dashboardLink" class="active">Dashboard</a></li>
+        <li><a href="table.html" id="tableLink">Table</a></li>
+      </ul>
+    </nav>
+    <div class="loading" id="loading" style="display: none">
+      <div class="loading-circle"></div>
+    </div>
+    <div class="container">
+      <div class="weather-input">
+        <div class="input-group">
+          <input
+            type="text"
+            class="text"
+            id="userLocation"
+            placeholder="Search for places...."
+          />
+          <select id="converter" class="converter">
+            <option value="C">&deg;C</option>
+            <option value="F">&deg;F</option>
+          </select>
+          <i class="fa fa-search" onclick="findUserLocation()"></i>
+        </div>
+        <div class="weatherIcon"></div>
+        <h2 class="temperature"></h2>
+        <div class="feelslike"></div>
+        <div class="description"></div>
+        <hr />
+        <div class="date"></div>
+        <div class="city"></div>
+      </div>
+      <div class="weather-output">
+        <h2 class="heading">Today's Highlights</h2>
+        <div class="Highlights">
+          <div class="humidity">
+            Humidity
+            <i class="fa-solid fa-water"></i>
+            <h1 id="HValue"></h1>
+          </div>
+          <div class="wind-speed">
+            Wind Speed
+            <i class="fa-solid fa-wind"></i>
+            <h1 id="WValue"></h1>
+          </div>
+          <div class="Sun">
+            <span>
+              <i class="fa-solid fa-sun"></i>
+              <p>Sunrise <span id="SRValue"></span></p>
+            </span>
+            <span>
+              <i class="fa-regular fa-sun"></i>
+              <p>Sunset <span id="SSValue"></span></p>
+            </span>
+          </div>
+          <div class="clouds">
+            Clouds
+            <i class="fa-solid fa-cloud"></i>
+            <h1 id="CValue"></h1>
+          </div>
+          <div class="uv-index">
+            Coordinates
+            <i class="fa-solid fa-compass"></i>
+            <h1 id="UVValue"></h1>
+          </div>
+          <div class="pressure">
+            Pressure
+            <i class="fa-solid fa-volcano"></i>
+            <h1 id="PValue"></h1>
+          </div>
+        </div>
+        <br />
+        <h2 class="heading">This Week</h2>
+        <div class="Forecast"></div>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("dashboardLink")
+        .addEventListener("click", function () {
+          setActiveLink("dashboardLink");
+        });
+
+      document
+        .getElementById("tableLink")
+        .addEventListener("click", function () {
+          setActiveLink("tableLink");
+        });
+
+      function setActiveLink(activeId) {
+        document.getElementById("dashboardLink").classList.remove("active");
+        document.getElementById("tableLink").classList.remove("active");
+        document.getElementById(activeId).classList.add("active");
+      }
+    </script>
+  </body>
+</html>

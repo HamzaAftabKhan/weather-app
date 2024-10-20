@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Weather Forecast Chart & Chatbot</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      /* Flexbox for aligning charts in a row */
+      .charts-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 20px;
+        margin-top: 50px;
+      }
+
+      /* Styling for each chart */
+      .chart-box {
+        flex: 1;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      canvas {
+        width: 100% !important;
+        height: 300px !important;
+      }
+
+      h3 {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
+      /* Chatbot styles */
+      .chatbot-container {
+        margin: 20px auto;
+        width: 50%;
+        max-width: 600px;
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-log {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      .chat-log p {
+        margin: 0;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .chat-log .user-message {
+        text-align: right;
+        font-weight: bold;
+      }
+
+      .chat-log .bot-response {
+        text-align: left;
+        color: #333;
+      }
+
+      .chat-input {
+        display: flex;
+      }
+
+      .chat-input input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+      }
+
+      .chat-input button {
+        margin-left: 10px;
+        padding: 10px 20px;
+        background-color: #5bc4f1;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .chat-input button:hover {
+        background-color: #5bc4f1;
+      }
+      .navbar {
+        list-style: none;
+        display: flex;
+        z-index: 100;
+        color: #333333;
+        padding: 10px 20px;
+        margin: 10px;
+        position: fixed;
+        top: 0; /* Keep at the top */
+        right: 20px; /* Move slightly to the center */
+        transform: translateX(-20%);
+      }
+
+      .navbar li {
+        margin-right: 20px;
+      }
+
+      .navbar a {
+        text-decoration: none;
+        color: #333333;
+        padding: 10px 20px;
+        border-radius: 5px;
+      }
+
+      .navbar a.active {
+        background-color: #5bc4f1; /* Highlight the active link */
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nip">
+      <ul class="navbar">
+        <li><a href="index.html" id="dashboardLink">Dashboard</a></li>
+        <li><a href="table.html" id="tableLink" class="active">Table</a></li>
+      </ul>
+    </nav>
+    <div class="charts-container">
+      <div class="chart-box">
+        <h3>Temperature (°C)</h3>
+        <canvas id="temperatureChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Weather Conditions</h3>
+        <canvas id="weatherConditionsChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Temperature Line</h3>
+        <canvas id="temperatureLineChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Chatbot Section -->
+    <div class="chatbot-container">
+      <div class="chat-log" id="chatLog"></div>
+      <div class="chat-input">
+        <input type="text" id="userInput" placeholder="Ask me anything..." />
+        <button onclick="handleChat()">Send</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+
+    <script>
+      // Chatbot logic
+      const chatLog = document.getElementById("chatLog");
+
+      function appendMessage(message, className) {
+        const p = document.createElement("p");
+        p.classList.add(className);
+        p.textContent = message;
+        chatLog.appendChild(p);
+        chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to the bottom
+      }
+
+      async function handleChat() {
+        const userInput = document.getElementById("userInput").value;
+        if (userInput.trim() === "") return;
+
+        // Display user input in the chat
+        appendMessage(userInput, "user-message");
+
+        // Process the input and get a response (weather or general query)
+        const response = await handleUserInput(userInput);
+        appendMessage(response, "bot-response");
+
+        // Clear input field
+        document.getElementById("userInput").value = "";
+      }
+
+      // Example function to handle user input (adjust this to your chatbot logic)
+      async function handleUserInput(userInput) {
+        if (isWeatherQuery(userInput)) {
+          const city = extractCityFromInput(userInput); // Use your existing city extraction logic
+          const weatherData = await fetchWeather(city);
+          if (weatherData.error) {
+            return weatherData.error;
+          } else {
+            return `The weather in ${weatherData.city} is currently ${weatherData.temperature}°C with ${weatherData.description}. Humidity: ${weatherData.humidity}%, Wind Speed: ${weatherData.windSpeed} m/s.`;
+          }
+        } else {
+          // Handle non-weather-related queries (integrate Gemini API or other logic)
+          return await handleGeneralQuery(userInput);
+        }
+      }
+
+      // Detect if the query is weather-related (existing function)
+      function isWeatherQuery(userInput) {
+        const weatherKeywords = [
+          "weather",
+          "forecast",
+          "rain",
+          "temperature",
+          "sunny",
+          "cloudy",
+        ];
+        return weatherKeywords.some((keyword) =>
+          userInput.toLowerCase().includes(keyword)
+        );
+      }
+    </script>
+    <script>
+      document
+        .getElementById("dashboardLink")
+        .addEventListener("click", function () {
+          setActiveLink("dashboardLink");
+        });
+
+      document
+        .getElementById("tableLink")
+        .addEventListener("click", function () {
+          setActiveLink("tableLink");
+        });
+
+      function setActiveLink(activeId) {
+        document.getElementById("dashboardLink").classList.remove("active");
+        document.getElementById("tableLink").classList.remove("active");
+        document.getElementById(activeId).classList.add("active");
+      }
+    </script>
+  </body>
+</html>
